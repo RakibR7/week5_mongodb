@@ -37,6 +37,21 @@ public class CustomerController {
         return ResponseEntity.ok(savedCustomer);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Customer> updateCustomer(@PathVariable String id, @Valid @RequestBody Customer customerDetails) {
+        Optional<Customer> existingCustomer = customerRepository.findById(id);
+        if (existingCustomer.isPresent()) {
+            Customer customer = existingCustomer.get();
+            customer.setName(customerDetails.getName());
+            customer.setEmail(customerDetails.getEmail());
+            Customer updatedCustomer = customerRepository.save(customer);
+            return ResponseEntity.ok(updatedCustomer);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable String id) {
         if (customerRepository.existsById(id)) {
