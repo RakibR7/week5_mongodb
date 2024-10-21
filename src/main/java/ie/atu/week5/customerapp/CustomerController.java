@@ -1,10 +1,8 @@
 package ie.atu.week5.customerapp;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +36,21 @@ public class CustomerController {
         Customer savedCustomer = customerRepository.save(customer);
         return ResponseEntity.ok(savedCustomer);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Customer> updateCustomer(@PathVariable String id, @Valid @RequestBody Customer customerDetails) {
+        Optional<Customer> existingCustomer = customerRepository.findById(id);
+        if (existingCustomer.isPresent()) {
+            Customer customer = existingCustomer.get();
+            customer.setName(customerDetails.getName());
+            customer.setEmail(customerDetails.getEmail());
+            Customer updatedCustomer = customerRepository.save(customer);
+            return ResponseEntity.ok(updatedCustomer);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable String id) {

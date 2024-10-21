@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/orders")
@@ -33,6 +34,22 @@ public class OrderController {
         Order savedOrder = orderRepository.save(order);
         return ResponseEntity.ok(savedOrder);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Order> updateOrder(@PathVariable String id, @Valid @RequestBody Order orderDetails) {
+        Optional<Order> existingOrder = orderRepository.findById(id);
+        if (existingOrder.isPresent()) {
+            Order order = existingOrder.get();
+            order.setOrderCode(orderDetails.getOrderCode());
+            order.setOrderDetails(orderDetails.getOrderDetails());
+            order.setOrderDate(orderDetails.getOrderDate());
+            Order updatedOrder = orderRepository.save(order);
+            return ResponseEntity.ok(updatedOrder);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable String id) {
